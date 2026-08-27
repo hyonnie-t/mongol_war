@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>고려, 몽골과 맞서다 — 1225~1232</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3ecdc;       /* 고문서 느낌 미색 */
+    --paper-dark:#e9dfc7;
+    --ink:#26201a;
+    --sub:#6d6153;
+    --celadon:#4f7f74;     /* 고려청자 비색 — 기본 강조색 */
+    --celadon-dark:#33564d;
+    --celadon-pale:#e4efec;
+    --seal:#b23a2e;        /* 인주 붉은색 — 위험/핵심 강조 */
+    --seal-dark:#8c2c22;
+    --night:#1b2430;       /* 짙은 남색 — 핵심 선택 반전 배경 */
+    --night-card:#26334554;
+    --line:#d9cdae;
+    --card:#fffdf6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans KR","Pretendard","Malgun Gothic",sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .serif{font-family:"Noto Serif KR",serif;}
+
+  /* ── 상단 헤더 + 진행 타임라인 ── */
+  .header{
+    background:linear-gradient(160deg, var(--celadon-dark) 0%, var(--celadon) 100%);
+    color:#fff;
+    padding:24px 20px 20px;
+    text-align:center;
+  }
+  .header .eyebrow{font-size:13px; letter-spacing:.5px; opacity:.85; font-weight:700;}
+  .header h1{margin:6px 0 4px; font-size:21px; font-weight:900;}
+  .header p{margin:0; font-size:13.5px; opacity:.9;}
+
+  .timeline{
+    display:flex; align-items:center; justify-content:center;
+    gap:4px; padding:14px 12px 4px; max-width:640px; margin:0 auto;
+    flex-wrap:wrap;
+  }
+  .tdot{
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    opacity:.45; transition:opacity .25s ease;
+    min-width:44px;
+  }
+  .tdot.done, .tdot.now{opacity:1;}
+  .tdot .yr{font-size:10.5px; font-weight:800; color:#fff;}
+  .tdot .bead{width:9px; height:9px; border-radius:50%; background:#fff; border:2px solid transparent;}
+  .tdot.now .bead{background:var(--seal); box-shadow:0 0 0 4px rgba(178,58,46,0.25);}
+  .tline{flex:1; height:2px; background:rgba(255,255,255,0.4); min-width:10px;}
+
+  .wrap{max-width:640px; margin:0 auto; padding:18px 16px 90px;}
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-bottom:16px;
+    box-shadow:0 3px 14px rgba(38,32,26,0.06);
+  }
+  .badge-chip{
+    display:inline-block;
+    background:var(--celadon-pale);
+    color:var(--celadon-dark);
+    font-size:13px;
+    font-weight:800;
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:12px;
+  }
+  .badge-chip.critical{background:#f7e3e0; color:var(--seal-dark);}
+  h2{font-size:19.5px; margin:0 0 12px; font-weight:900; font-family:"Noto Serif KR",serif; line-height:1.4;}
+  h3{font-size:15.5px; margin:16px 0 8px; font-weight:800; color:var(--celadon-dark);}
+  p{color:var(--ink); margin:0 0 10px;}
+  .sub{color:var(--sub); font-size:14.5px;}
+
+  label{display:block; font-weight:700; font-size:14.5px; margin:14px 0 6px;}
+  input[type=text]{
+    width:100%; padding:14px 16px; font-size:17px;
+    border:2px solid var(--line); border-radius:12px;
+    background:#fffdf9; min-height:48px;
+  }
+  input:focus{outline:none; border-color:var(--celadon);}
+  textarea{
+    width:100%; min-height:90px; padding:14px 16px; font-size:16px;
+    border:2px solid var(--line); border-radius:12px;
+    background:#fffdf9; resize:vertical; font-family:inherit; line-height:1.5;
+  }
+  textarea:focus{outline:none; border-color:var(--celadon);}
+
+  .btn{
+    display:block; width:100%; padding:15px 20px; font-size:16.5px; font-weight:800;
+    border:none; border-radius:12px; cursor:pointer; min-height:50px; margin-top:14px;
+    transition:transform .1s ease, opacity .15s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--celadon); color:#fff; box-shadow:0 4px 12px rgba(79,127,116,0.3);}
+  .btn-primary:disabled{background:#c9d6d2; color:#fff; cursor:not-allowed; box-shadow:none;}
+  .btn-seal{background:var(--seal); color:#fff; box-shadow:0 4px 12px rgba(178,58,46,0.3);}
+  .btn-outline{background:#fff; color:var(--celadon-dark); border:2px solid var(--celadon);}
+
+  /* ── 선택지 버튼 ── */
+  .opt-list{display:flex; flex-direction:column; gap:10px; margin:14px 0 4px;}
+  .opt-btn{
+    text-align:left; background:#fff; border:2px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-size:15.5px; font-weight:700; color:var(--ink);
+    cursor:pointer; min-height:52px; display:flex; align-items:center; gap:10px;
+  }
+  .opt-btn:active{transform:scale(0.99);}
+  .opt-btn .opt-mark{
+    width:24px; height:24px; border-radius:50%; border:2px solid var(--line);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px;
+  }
+  .opt-btn.selected{border-color:var(--celadon); background:var(--celadon-pale);}
+  .opt-btn.selected .opt-mark{border-color:var(--celadon); background:var(--celadon); color:#fff;}
+
+  /* ── 핵심 선택(턴3) 반전 배경 ── */
+  .critical-zone{
+    background:var(--night); color:#f3ecdc; border-radius:18px; padding:22px 20px; margin-bottom:16px;
+    box-shadow:0 6px 22px rgba(27,36,48,0.35);
+  }
+  .critical-zone h2{color:#fff;}
+  .critical-zone p{color:#dcd5c6;}
+  .critical-zone .opt-btn{background:#2a3648; border-color:#3d4c60; color:#f3ecdc;}
+  .critical-zone .opt-btn .opt-mark{border-color:#5a6d84;}
+  .critical-zone .opt-btn.selected{border-color:var(--seal); background:#3a2622;}
+  .critical-zone .opt-btn.selected .opt-mark{border-color:var(--seal); background:var(--seal);}
+  .critical-zone .sub{color:#b7ae9a;}
+  .pulse-tag{
+    display:inline-flex; align-items:center; gap:6px; background:var(--seal); color:#fff;
+    font-size:12.5px; font-weight:800; padding:5px 12px; border-radius:100px; margin-bottom:12px;
+  }
+
+  .fact-card{
+    background:#fff8ee; border-left:4px solid var(--celadon); border-radius:0 12px 12px 0;
+    padding:12px 14px; margin:12px 0; font-size:14px; color:var(--sub);
+  }
+  .fact-card b{color:var(--celadon-dark);}
+
+  .result-box{
+    background:var(--celadon-pale); border-radius:14px; padding:16px 18px; margin:14px 0;
+    font-size:15px; line-height:1.65;
+  }
+  .result-box.debate{background:#f7e3e0;}
+  .result-box b{color:var(--celadon-dark);}
+  .result-box.debate b{color:var(--seal-dark);}
+
+  .predict-badge{
+    display:inline-flex; gap:6px; font-size:13px; font-weight:800; color:var(--sub);
+    background:#eee6d3; padding:5px 12px; border-radius:100px; margin-bottom:10px;
+  }
+
+  /* ── 순서 재배열 ── */
+  .reorder-list{display:flex; flex-direction:column; gap:10px; margin:14px 0;}
+  .reorder-card{
+    display:flex; align-items:center; gap:12px;
+    background:#fff; border:2px solid var(--line); border-radius:14px;
+    padding:12px 14px; min-height:54px; cursor:pointer; user-select:none;
+  }
+  .reorder-card.picked{border-color:var(--seal); background:#fdf1ef;}
+  .reorder-card .slot-num{
+    width:26px; height:26px; border-radius:50%; background:var(--celadon); color:#fff;
+    font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .reorder-card .label{font-size:15px; font-weight:700; flex:1;}
+  .reorder-card .yr-tag{font-size:12.5px; color:var(--sub); font-weight:700;}
+  .reorder-hint{font-size:13.5px; color:var(--sub); margin:6px 0 10px;}
+  .reorder-result-row{display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14.5px;}
+  .reorder-result-row:last-child{border-bottom:none;}
+  .reorder-result-row .ok{color:var(--celadon-dark); font-weight:800;}
+  .reorder-result-row .no{color:var(--seal-dark); font-weight:800;}
+
+  .final-msg{
+    background:linear-gradient(160deg, var(--celadon-pale), #fff); border-radius:18px;
+    padding:22px 20px; text-align:center; margin-top:6px;
+  }
+  .final-msg .mark{font-size:26px; margin-bottom:6px;}
+
+  .teacher-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .teacher-table th, .teacher-table td{border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top;}
+  .teacher-table th{background:var(--celadon-pale);}
+
+  .preview-banner{
+    background:var(--seal); color:#fff; text-align:center; font-size:13px; font-weight:800;
+    padding:8px; position:sticky; top:0; z-index:20;
+  }
+
+  @media (min-width:760px){ body{font-size:17.5px;} }
+</style>
+</head>
+<body>
+
+<div class="preview-banner" id="previewBanner" style="display:none;">🔍 미리보기 모드 — 제출해도 기록에 안 남아요</div>
+
+<div class="header">
+  <div class="eyebrow serif">3학년 한국사 · 고려의 성립과 변천</div>
+  <h1 class="serif">고려, 몽골과 맞서다</h1>
+  <p>93쪽 · 침략과 항전의 시작 (1225~1232)</p>
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- 화면: 로그인 -->
+  <div class="screen active" id="screen-start">
+    <div class="card">
+      <span class="badge-chip">시작하기</span>
+      <h2>13세기, 고려 앞에 몽골이 나타났다</h2>
+      <p class="sub">여러분은 그때그때 고려의 입장에서 판단을 내리게 됩니다.
+      선택에 따라 결과가 달라지는 게임이 아니라, <b>실제 역사가 어떻게 흘러갔는지</b>를
+      직접 판단해보고 확인하는 활동이에요.</p>
+
+      <label>학번</label>
+      <input type="text" id="studentId" inputmode="numeric" placeholder="예: 30501">
+      <label>이름</label>
+      <input type="text" id="studentName" placeholder="이름을 입력하세요">
+
+      <button class="btn btn-primary" id="startBtn" disabled>게임 시작하기</button>
+    </div>
+  </div>
+
+  <!-- 화면: 턴(선택/예측) 공통 컨테이너 -->
+  <div class="screen" id="screen-turn">
+    <div id="turnHost"></div>
+  </div>
+
+  <!-- 화면: 결과 공통 컨테이너 -->
+  <div class="screen" id="screen-turn-result">
+    <div id="turnResultHost"></div>
+  </div>
+
+  <!-- 화면: 순서 재배열 -->
+  <div class="screen" id="screen-reorder">
+    <div class="card">
+      <span class="badge-chip">인출 활동</span>
+      <h2>지금까지 있었던 일, 순서대로 놓아보자</h2>
+      <p class="sub reorder-hint">힌트 없이, 방금 겪은 사건들을 시간 순서대로 배열해보세요.
+      카드 두 개를 순서대로 탭하면 자리가 서로 바뀝니다.</p>
+      <div class="reorder-list" id="reorderList"></div>
+      <button class="btn btn-primary" id="reorderSubmitBtn">순서 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 화면: 순서 재배열 결과 -->
+  <div class="screen" id="screen-reorder-result">
+    <div class="card">
+      <span class="badge-chip">확인</span>
+      <h2 id="reorderResultTitle">결과를 확인해보자</h2>
+      <div id="reorderResultBody"></div>
+      <div class="final-msg">
+        <div class="mark">📖</div>
+        <div style="font-weight:900; font-size:16px;">이제 선생님 설명을 들어보자</div>
+        <div class="sub" style="margin-top:4px;">오늘 게임에서 다룬 사건들을 자세히 정리해볼 거예요.</div>
+      </div>
+      <button class="btn btn-outline" id="submitFinalBtn">활동 제출 완료</button>
+    </div>
+  </div>
+
+  <!-- 화면: 최종 제출 완료 -->
+  <div class="screen" id="screen-done">
+    <div class="card">
+      <span class="badge-chip">제출 완료</span>
+      <h2 id="doneGreeting">수고했어요!</h2>
+      <p class="sub">강화도 천도에 대한 여러분의 판단(1줄 메모)은 2차시(강화·삼별초)
+      활동에서 다시 불러와 이어서 다룰 거예요. 오늘 쓴 건 <b>임시 판단</b>이에요.</p>
+    </div>
+  </div>
+
+  <!-- 화면: 교사용 대시보드 -->
+  <div class="screen" id="screen-teacher">
+    <div class="card">
+      <span class="badge-chip">교사용</span>
+      <h2>제출 현황</h2>
+      <p class="sub" id="teacherStatus">불러오는 중...</p>
+      <div style="overflow-x:auto;">
+        <table class="teacher-table" id="teacherTable"></table>
+      </div>
+      <button class="btn btn-outline" id="teacherRefreshBtn">새로고침</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+ * CONFIG
+ * ════════════════════════════════════════════════════════ */
+const CONFIG = {
+  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbyXSjCfWY_HiZFqW_OBR-FQDoIfFl1z_STqyKWUI31MacHeY3u7hbirFSFDvW-5yuUHaJQ/exec",
+  GAME_NAME: "mongol_war_game",
+  TEACHER_TOKEN: "his26"
+};
+
+/* ════════════════════════════════════════════════════════
+ * 턴 데이터 — 93쪽(고려의 성립과 변천, 몽골의 간섭과 고려의 개혁) 기준
+ * 역사 정확성 메모:
+ *  - 저고여 피살(1225): 범인 불분명. 몽골이 국교 단절.
+ *  - 1231 1차 침입까지 6년 간격은 몽골 내부 사정(칭기즈 칸 사망 등) 때문 — 임의 공백 아님.
+ *  - 다루가치: "내정 감시·감독" 역할. 직접 통치 아님 (교과서 각주 그대로).
+ *  - 강화도 천도(1232): 교과서는 "항전 준비"로 서술. 권력욕 여부는 해석이 갈리는 지점 —
+ *    결과 문구에 성공/실패, 옳다/그르다 판정 없음.
+ *  - 처인성 전투: 김윤후 + 처인 부곡 백성의 공동 전공 (김윤후 개인 공적으로 안 몰기).
+ *  - 침입 횟수: "여러 차례"로만 서술, 특정 차수 숫자 안 씀.
+ * ════════════════════════════════════════════════════════ */
+const TURNS = [
+  {
+    id: "t1", kind: "choice", year: "1225", badge: "사신 피살",
+    situation: "고려에 왔던 몽골 사신 저고여가 본국으로 돌아가던 길에 살해당했어. 범인이 누구인지는 지금까지도 밝혀지지 않았어.",
+    question: "고려 조정이라면, 이 사건에 어떻게 대응했을까?",
+    options: [
+      { id:"a", label:"몽골에 해명 사신을 보낸다" },
+      { id:"b", label:"별다른 조치를 하지 않는다" }
+    ],
+    result: `<b>실제 역사</b> — 고려는 별다른 조치를 하지 않았어. 몽골은 이를 의심하며 국교를 끊었어.
+    사건 자체는 그해(1225) 일이지만, 몽골은 바로 쳐들어오지 않았어. 칭기즈 칸의 죽음 등
+    몽골 내부 사정 때문에 6년이 지난 1231년에야 실제 침입이 시작돼.`,
+  },
+  {
+    id: "t2", kind: "choice", year: "1231", badge: "1차 침입",
+    situation: "6년 뒤인 1231년, 몽골이 마침내 고려를 침입했어. 귀주성을 비롯한 북쪽 여러 성에서는 백성과 관군이 끝까지 맞서 싸웠어. 하지만 여러 성이 잇따라 함락됐어.",
+    question: "최씨 정권이라면, 이 상황에서 어떤 선택을 할까?",
+    options: [
+      { id:"a", label:"끝까지 항전을 이어간다" },
+      { id:"b", label:"몽골과 강화를 맺는다" }
+    ],
+    result: `<b>실제 역사</b> — 방어군이 밀리자 최씨 정권은 몽골과 강화를 맺었어.
+    몽골군은 북방 점령지와 개경에 다루가치를 두고 돌아갔어.`,
+    factCard: { title:"다루가치란?", body:"'속박하는 사람'이라는 뜻의 몽골어에서 온 말. 고려의 내정을 감시·감독하는 역할이었어. 직접 다스리는 통치자는 아니었어." }
+  },
+  {
+    id: "t3", kind: "choice", year: "1232", badge: "⏸ 중요한 선택 — 수도를 옮길까?", critical: true,
+    situation: "다루가치를 통해 몽골의 간섭이 이어지자, 최씨 정권은 수도를 어떻게 할지 결정해야 했어.",
+    question: "최씨 정권의 입장에서, 개경에 남을까 강화도로 옮길까?",
+    options: [
+      { id:"a", label:"개경에 남는다" },
+      { id:"b", label:"강화도로 수도를 옮긴다" }
+    ],
+    result: `<b>실제 역사</b> — 최씨 정권은 강화도로 수도를 옮겼어(1232). 강화도는 농사지을 땅이 넉넉해
+    식량 걱정이 적고, 물살이 거세 해전에 약한 몽골군이 쉽게 접근하기 어려운 곳이었어.
+    교과서는 이 선택을 '몽골에 맞서기 위한 항전 준비'라고 설명해.<br><br>
+    그런데 이 선택이 정말 항전만을 위한 것이었는지, 최씨 정권 자신들의 권력을 지키려는
+    목적도 있었는지는 역사학자들 사이에서도 해석이 갈려. 정답은 없어.`,
+    debate: true,
+    noteRequired: true,
+    notePrompt: "이 선택이 왜 논쟁적인 선택일까? 1줄로 적어보자."
+  },
+  {
+    id: "t4", kind: "predict", year: "1232", badge: "처인성 전투",
+    situation: "강화도 천도 직후, 몽골이 다시 쳐들어왔어. 이번엔 처인성(지금의 용인)에서 고려군과 마주쳤어.",
+    question: "몽골군이 이겼을까, 졌을까?",
+    options: [
+      { id:"a", label:"몽골군이 이겼다" },
+      { id:"b", label:"몽골군이 졌다" }
+    ],
+    result: `<b>실제 역사</b> — 몽골군이 졌어. 승려 김윤후와 처인 부곡의 백성들이 함께 싸워
+    몽골군의 총사령관 살리타를 죽였어(1232). 김윤후 한 사람의 활약이 아니라,
+    부곡 백성들과 함께 이뤄낸 승리였어.`
+  },
+  {
+    id: "t5", kind: "predict", year: "무신 정권기", badge: "차별받던 계층의 참전",
+    situation: "이 시기, 특수 행정 구역(부곡·소 등)에 살며 차별받던 사람들과 노비들도 있었어.",
+    question: "이들도 몽골에 맞서 함께 싸웠을까?",
+    options: [
+      { id:"a", label:"함께 싸웠다" },
+      { id:"b", label:"싸움에 나서지 않았다" }
+    ],
+    result: `<b>실제 역사</b> — 차별받던 특수 행정 구역의 주민과 노비도 단결해서 몽골에 저항했어.`,
+    noteRequired: true,
+    notePrompt: "신분 때문에 차별받던 사람들이 왜 이 싸움에 함께했을지, 자기 생각을 적어보자."
+  }
+];
+
+const REORDER_CARDS = [
+  { id:"r1", label:"사신 피살", yr:"1225" },
+  { id:"r2", label:"1차 침입", yr:"1231" },
+  { id:"r3", label:"강화·다루가치 설치", yr:"1231" },
+  { id:"r4", label:"강화도 천도", yr:"1232" },
+  { id:"r5", label:"처인성 전투", yr:"1232" },
+  { id:"r6", label:"차별받던 계층 참전", yr:"무신정권기" }
+];
+const CORRECT_ORDER = ["r1","r2","r3","r4","r5","r6"];
+
+/* ── 상태 ── */
+let studentId = "", studentName = "";
+let turnIndex = 0;
+let answers = {};   // turnId -> optionId
+let notes = {};     // turnId -> text
+let reorderState = REORDER_CARDS.map(c => c.id);
+let pickedForSwap = null;
+let PREVIEW = false;
+
+/* ── URL 파라미터 자동 채움 / 모드 분기 ── */
+(function init(){
+  const params = new URLSearchParams(location.search);
+  const sid = params.get("sid") || "";
+  const name = params.get("name") || "";
+  if (sid) document.getElementById("studentId").value = sid;
+  if (name) document.getElementById("studentName").value = name;
+  checkStart();
+
+  if (params.get("preview") === "1") {
+    PREVIEW = true;
+    document.getElementById("previewBanner").style.display = "block";
+    if (!sid) document.getElementById("studentId").value = "preview";
+    if (!name) document.getElementById("studentName").value = "교사미리보기";
+    checkStart();
+  }
+
+  if (params.get("token")) {
+    showScreen("screen-teacher");
+    loadTeacherView(params.get("token"));
+    document.getElementById("teacherRefreshBtn").addEventListener("click", () => loadTeacherView(params.get("token")));
+  }
+})();
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ── 타임라인 렌더 ── */
+function renderTimeline(){
+  const host = document.getElementById("timeline");
+  host.innerHTML = "";
+  TURNS.forEach((t, i) => {
+    if (i > 0) {
+      const line = document.createElement("div");
+      line.className = "tline";
+      host.appendChild(line);
+    }
+    const dot = document.createElement("div");
+    dot.className = "tdot" + (i < turnIndex ? " done" : (i === turnIndex ? " now" : ""));
+    dot.innerHTML = `<div class="bead"></div><div class="yr">${t.year}</div>`;
+    host.appendChild(dot);
+  });
+}
+
+/* ── 로그인 ── */
+const studentIdEl = document.getElementById("studentId");
+const studentNameEl = document.getElementById("studentName");
+const startBtn = document.getElementById("startBtn");
+function checkStart(){
+  startBtn.disabled = !(studentIdEl.value.trim() && studentNameEl.value.trim());
+}
+[studentIdEl, studentNameEl].forEach(el => el.addEventListener("input", checkStart));
+startBtn.addEventListener("click", () => {
+  studentId = studentIdEl.value.trim();
+  studentName = studentNameEl.value.trim();
+  turnIndex = 0;
+  renderTimeline();
+  renderTurn();
+  showScreen("screen-turn");
+});
+
+/* ── 턴 렌더 (선택/예측 공통) ── */
+function renderTurn(){
+  const t = TURNS[turnIndex];
+  renderTimeline();
+  const host = document.getElementById("turnHost");
+  const isCritical = !!t.critical;
+  const badgeClass = isCritical ? "badge-chip critical" : "badge-chip";
+  const optsHtml = t.options.map(o => `
+    <button class="opt-btn" data-opt="${o.id}">
+      <span class="opt-mark"></span><span>${o.label}</span>
+    </button>`).join("");
+
+  const bodyHtml = `
+    <span class="${badgeClass}">${t.year} · ${t.badge}</span>
+    <h2>${t.question}</h2>
+    <p>${t.situation}</p>
+    <div class="opt-list">${optsHtml}</div>
+    <button class="btn btn-primary" id="turnConfirmBtn" disabled>선택 확인하기</button>
+  `;
+
+  if (isCritical) {
+    host.innerHTML = `<div class="critical-zone">
+      <span class="pulse-tag">⏸ 중요한 선택</span>
+      <h2>${t.question}</h2>
+      <p>${t.situation}</p>
+      <div class="opt-list">${optsHtml}</div>
+      <button class="btn btn-seal" id="turnConfirmBtn" disabled>선택 확인하기</button>
+    </div>`;
+  } else {
+    host.innerHTML = bodyHtml;
+  }
+
+  let selected = null;
+  host.querySelectorAll(".opt-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      host.querySelectorAll(".opt-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selected = btn.dataset.opt;
+      document.getElementById("turnConfirmBtn").disabled = false;
+    });
+  });
+
+  document.getElementById("turnConfirmBtn").addEventListener("click", () => {
+    answers[t.id] = selected;
+    renderTurnResult(t);
+    showScreen("screen-turn-result");
+  });
+}
+
+/* ── 턴 결과 렌더 ── */
+function renderTurnResult(t){
+  const host = document.getElementById("turnResultHost");
+  const factHtml = t.factCard ? `<div class="fact-card"><b>${t.factCard.title}</b><br>${t.factCard.body}</div>` : "";
+  const noteHtml = t.noteRequired ? `
+    <label>${t.notePrompt}</label>
+    <textarea id="turnNote" placeholder="한 줄이어도 좋으니 내 생각을 적어보자"></textarea>
+  ` : "";
+
+  host.innerHTML = `
+    <div class="card">
+      <span class="badge-chip">${t.year} · 실제 역사</span>
+      <h2>${t.kind === "predict" ? "결과는?" : "실제로는 어떻게 됐을까?"}</h2>
+      <div class="result-box ${t.debate ? "debate" : ""}">${t.result}</div>
+      ${factHtml}
+      ${noteHtml}
+      <button class="btn btn-primary" id="turnNextBtn" ${t.noteRequired ? "disabled" : ""}>다음으로</button>
+    </div>
+  `;
+
+  if (t.noteRequired) {
+    const noteEl = document.getElementById("turnNote");
+    const nextBtn = document.getElementById("turnNextBtn");
+    noteEl.addEventListener("input", () => {
+      nextBtn.disabled = noteEl.value.trim().length < 2;
+    });
+  }
+
+  document.getElementById("turnNextBtn").addEventListener("click", () => {
+    if (t.noteRequired) notes[t.id] = document.getElementById("turnNote").value.trim();
+    turnIndex++;
+    if (turnIndex < TURNS.length) {
+      renderTurn();
+      showScreen("screen-turn");
+    } else {
+      renderTimeline();
+      renderReorder();
+      showScreen("screen-reorder");
+    }
+  });
+}
+
+/* ── 순서 재배열 (탭-스왑 방식: 터치 환경에서 네이티브 드래그보다 안정적) ── */
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function renderReorder(){
+  reorderState = shuffle(REORDER_CARDS.map(c => c.id));
+  pickedForSwap = null;
+  drawReorderList();
+}
+function drawReorderList(){
+  const host = document.getElementById("reorderList");
+  host.innerHTML = "";
+  reorderState.forEach((cardId, i) => {
+    const card = REORDER_CARDS.find(c => c.id === cardId);
+    const el = document.createElement("div");
+    el.className = "reorder-card" + (pickedForSwap === cardId ? " picked" : "");
+    el.innerHTML = `<span class="slot-num">${i+1}</span><span class="label">${card.label}</span><span class="yr-tag">${card.yr}</span>`;
+    el.addEventListener("click", () => onReorderCardClick(cardId));
+    host.appendChild(el);
+  });
+}
+function onReorderCardClick(cardId){
+  if (!pickedForSwap) {
+    pickedForSwap = cardId;
+  } else if (pickedForSwap === cardId) {
+    pickedForSwap = null;
+  } else {
+    const i1 = reorderState.indexOf(pickedForSwap);
+    const i2 = reorderState.indexOf(cardId);
+    [reorderState[i1], reorderState[i2]] = [reorderState[i2], reorderState[i1]];
+    pickedForSwap = null;
+  }
+  drawReorderList();
+}
+
+document.getElementById("reorderSubmitBtn").addEventListener("click", () => {
+  const matchCount = reorderState.filter((id, i) => id === CORRECT_ORDER[i]).length;
+  const rows = CORRECT_ORDER.map((id, i) => {
+    const card = REORDER_CARDS.find(c => c.id === id);
+    const studentPos = reorderState.indexOf(id) + 1;
+    const isCorrectPos = (reorderState[i] === id);
+    return `<div class="reorder-result-row">
+      <span class="${isCorrectPos ? "ok" : "no"}">${i+1}번</span>
+      <span>${card.label} (${card.yr})</span>
+      <span class="sub" style="margin-left:auto;">내가 놓은 자리: ${studentPos}번</span>
+    </div>`;
+  }).join("");
+
+  document.getElementById("reorderResultTitle").textContent =
+    matchCount === CORRECT_ORDER.length ? "순서를 정확히 맞혔어요!" : `${matchCount}개 자리를 맞혔어요`;
+  document.getElementById("reorderResultBody").innerHTML = `
+    <p class="sub">정답 순서와 비교해보세요.</p>${rows}
+  `;
+  showScreen("screen-reorder-result");
+});
+
+/* ── 최종 제출 ── */
+document.getElementById("submitFinalBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("submitFinalBtn");
+  btn.disabled = true;
+  btn.textContent = "제출 중...";
+
+  const matchCount = reorderState.filter((id, i) => id === CORRECT_ORDER[i]).length;
+  const choiceSummary = TURNS.map(t => `${t.badge}:${answers[t.id] || "-"}`).join(" / ") +
+    ` | 재배열 일치 ${matchCount}/${CORRECT_ORDER.length}`;
+  const reflection = TURNS.filter(t => t.noteRequired).map(t => `[${t.badge}] ${notes[t.id] || ""}`).join("\n");
+
+  const payload = {
+    gameName: CONFIG.GAME_NAME,
+    studentId: studentId,
+    studentName: studentName,
+    choiceSummary: choiceSummary,
+    diffSummary: `재배열 최종 순서: ${reorderState.map(id => REORDER_CARDS.find(c=>c.id===id).label).join(" → ")}`,
+    reflection: reflection,
+    choicesJson: JSON.stringify({ answers, notes, reorderFinal: reorderState, reorderMatch: matchCount })
+  };
+
+  if (!PREVIEW) {
+    try {
+      if (CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0) {
+        await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+      }
+    } catch (err) {
+      console.log("전송 실패(콘솔 확인용):", err);
+    }
+  } else {
+    console.log("[미리보기] 실제 전송 안 함:", payload);
+  }
+
+  document.getElementById("doneGreeting").textContent = `${studentName}, 수고했어요!`;
+  showScreen("screen-done");
+});
+
+/* ── 교사용 대시보드 ── */
+async function loadTeacherView(token){
+  const statusEl = document.getElementById("teacherStatus");
+  const tableEl = document.getElementById("teacherTable");
+  statusEl.textContent = "불러오는 중...";
+  try {
+    const url = `${CONFIG.SHEET_WEBAPP_URL}?token=${encodeURIComponent(token)}&game=${encodeURIComponent(CONFIG.GAME_NAME)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.result === "error") {
+      statusEl.textContent = "인증 실패: " + data.message;
+      tableEl.innerHTML = "";
+      return;
+    }
+    const rows = data.rows || [];
+    statusEl.textContent = `총 ${rows.length}건 제출됨`;
+    tableEl.innerHTML = `<tr><th>학번</th><th>이름</th><th>선택 요약</th><th>서술</th></tr>` +
+      rows.map(r => `<tr><td>${r.studentId||""}</td><td>${r.studentName||""}</td><td>${r.choiceSummary||""}</td><td>${(r.reflection||"").replace(/\n/g,"<br>")}</td></tr>`).join("");
+  } catch (err) {
+    statusEl.textContent = "불러오기 실패: " + err.message;
+  }
+}
+</script>
+
+</body>
+</html>
