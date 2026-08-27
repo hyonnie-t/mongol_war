@@ -302,7 +302,7 @@
  * CONFIG
  * ════════════════════════════════════════════════════════ */
 const CONFIG = {
-  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbyXSjCfWY_HiZFqW_OBR-FQDoIfFl1z_STqyKWUI31MacHeY3u7hbirFSFDvW-5yuUHaJQ/exec",
+  SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbyXSjCfWY_HiZFqW_OBR-FQDoIfF1z_STqyKWUI31MacHeY3u7hbirFSFDvW-5yuUHaJQ/exec",
   GAME_NAME: "mongol_war_game",
   TEACHER_TOKEN: "his26"
 };
@@ -405,8 +405,11 @@ let reorderState = REORDER_CARDS.map(c => c.id);
 let pickedForSwap = null;
 let PREVIEW = false;
 
-/* ── URL 파라미터 자동 채움 / 모드 분기 ── */
-(function init(){
+/* ── URL 파라미터 자동 채움 / 모드 분기 ──
+ * 주의: 이 함수는 studentIdEl 등 아래쪽 const를 참조하므로,
+ * 반드시 그 const 선언들과 이벤트 바인딩이 모두 끝난 뒤(스크립트 맨 아래)에 호출해야 함.
+ * 위쪽에서 즉시실행하면 TDZ 에러로 스크립트 전체가 멈춰서 로그인 버튼이 죽는다. */
+function init(){
   const params = new URLSearchParams(location.search);
   const sid = params.get("sid") || "";
   const name = params.get("name") || "";
@@ -427,7 +430,7 @@ let PREVIEW = false;
     loadTeacherView(params.get("token"));
     document.getElementById("teacherRefreshBtn").addEventListener("click", () => loadTeacherView(params.get("token")));
   }
-})();
+}
 
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -680,6 +683,9 @@ async function loadTeacherView(token){
     statusEl.textContent = "불러오기 실패: " + err.message;
   }
 }
+
+/* ── 진입점: 모든 선언·바인딩이 끝난 뒤 마지막에 실행 ── */
+init();
 </script>
 
 </body>
