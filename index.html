@@ -6,6 +6,7 @@
 <title>고려, 몽골과 맞서다 — 1225~1232</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <style>
   :root{
     --paper:#f3ecdc;       /* 고문서 느낌 미색 */
@@ -147,6 +148,18 @@
     font-size:12.5px; font-weight:800; padding:5px 12px; border-radius:100px; margin-bottom:12px;
   }
 
+  .hint-toggle{
+    display:inline-flex; align-items:center; gap:6px;
+    background:none; border:1px solid var(--line); color:var(--sub);
+    font-size:13px; font-weight:700; padding:8px 14px; border-radius:100px;
+    cursor:pointer; margin:8px 0 0;
+  }
+  .hint-box{
+    display:none; background:#fff8ee; border-radius:12px; padding:12px 14px;
+    font-size:14px; color:var(--sub); margin-top:8px; line-height:1.6;
+  }
+  .hint-box.open{display:block;}
+
   .fact-card{
     background:#fff8ee; border-left:4px solid var(--celadon); border-radius:0 12px 12px 0;
     padding:12px 14px; margin:12px 0; font-size:14px; color:var(--sub);
@@ -166,20 +179,32 @@
     background:#eee6d3; padding:5px 12px; border-radius:100px; margin-bottom:10px;
   }
 
-  /* ── 순서 재배열 ── */
+  /* ── 순서 재배열: 드래그(SortableJS) + 화살표 이중 지원 ── */
   .reorder-list{display:flex; flex-direction:column; gap:10px; margin:14px 0;}
   .reorder-card{
-    display:flex; align-items:center; gap:12px;
+    display:flex; align-items:center; gap:10px;
     background:#fff; border:2px solid var(--line); border-radius:14px;
-    padding:12px 14px; min-height:54px; cursor:pointer; user-select:none;
+    padding:10px 12px; min-height:54px; user-select:none;
   }
-  .reorder-card.picked{border-color:var(--seal); background:#fdf1ef;}
+  .reorder-card.sortable-ghost{border-color:var(--seal); background:#fdf1ef; opacity:.7;}
+  .reorder-card.sortable-chosen{box-shadow:0 4px 14px rgba(38,32,26,0.15);}
   .reorder-card .slot-num{
     width:26px; height:26px; border-radius:50%; background:var(--celadon); color:#fff;
     font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
+  .reorder-card .drag-handle{
+    font-size:20px; color:var(--sub); cursor:grab; padding:6px 4px; flex-shrink:0;
+    touch-action:none;
+  }
   .reorder-card .label{font-size:15px; font-weight:700; flex:1;}
-  .reorder-card .yr-tag{font-size:12.5px; color:var(--sub); font-weight:700;}
+  .reorder-card .yr-tag{font-size:12.5px; color:var(--sub); font-weight:700; margin-right:4px;}
+  .arrow-group{display:flex; flex-direction:column; gap:2px; flex-shrink:0;}
+  .arrow-btn{
+    width:34px; height:26px; border-radius:8px; border:1px solid var(--line); background:#faf6ea;
+    color:var(--celadon-dark); font-size:13px; font-weight:800; cursor:pointer; display:flex;
+    align-items:center; justify-content:center; min-height:26px;
+  }
+  .arrow-btn:disabled{opacity:.3; cursor:not-allowed;}
   .reorder-hint{font-size:13.5px; color:var(--sub); margin:6px 0 10px;}
   .reorder-result-row{display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14.5px;}
   .reorder-result-row:last-child{border-bottom:none;}
@@ -191,10 +216,6 @@
     padding:22px 20px; text-align:center; margin-top:6px;
   }
   .final-msg .mark{font-size:26px; margin-bottom:6px;}
-
-  .teacher-table{width:100%; border-collapse:collapse; font-size:13px;}
-  .teacher-table th, .teacher-table td{border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top;}
-  .teacher-table th{background:var(--celadon-pale);}
 
   .preview-banner{
     background:var(--seal); color:#fff; text-align:center; font-size:13px; font-weight:800;
@@ -251,7 +272,7 @@
       <span class="badge-chip">인출 활동</span>
       <h2>지금까지 있었던 일, 순서대로 놓아보자</h2>
       <p class="sub reorder-hint">힌트 없이, 방금 겪은 사건들을 시간 순서대로 배열해보세요.
-      카드 두 개를 순서대로 탭하면 자리가 서로 바뀝니다.</p>
+      왼쪽 손잡이(⠿)를 눌러 끌어서 옮기거나, 오른쪽 화살표로 한 칸씩 옮길 수 있어요.</p>
       <div class="reorder-list" id="reorderList"></div>
       <button class="btn btn-primary" id="reorderSubmitBtn">순서 제출하기</button>
     </div>
@@ -282,18 +303,6 @@
     </div>
   </div>
 
-  <!-- 화면: 교사용 대시보드 -->
-  <div class="screen" id="screen-teacher">
-    <div class="card">
-      <span class="badge-chip">교사용</span>
-      <h2>제출 현황</h2>
-      <p class="sub" id="teacherStatus">불러오는 중...</p>
-      <div style="overflow-x:auto;">
-        <table class="teacher-table" id="teacherTable"></table>
-      </div>
-      <button class="btn btn-outline" id="teacherRefreshBtn">새로고침</button>
-    </div>
-  </div>
 
 </div>
 
@@ -303,8 +312,9 @@
  * ════════════════════════════════════════════════════════ */
 const CONFIG = {
   SHEET_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbyXSjCfWY_HiZFqW_OBR-FQDoIfF1z_STqyKWUI31MacHeY3u7hbirFSFDvW-5yuUHaJQ/exec",
-  GAME_NAME: "mongol_war_game",
-  TEACHER_TOKEN: "his26"
+  GAME_NAME: "mongol_war_game"
+  // 교사용 제출 현황은 통합 포털 대시보드에서 백엔드(teacherGet_)를 직접 호출해서 보여줌 —
+  // 이 웹앱 안에는 교사 토큰을 넣지 않음(학생용 페이지 소스에 노출되는 걸 막기 위함).
 };
 
 /* ════════════════════════════════════════════════════════
@@ -358,7 +368,8 @@ const TURNS = [
     목적도 있었는지는 역사학자들 사이에서도 해석이 갈려. 정답은 없어.`,
     debate: true,
     noteRequired: true,
-    notePrompt: "이 선택이 왜 논쟁적인 선택일까? 1줄로 적어보자."
+    notePrompt: "이 선택이 왜 논쟁적인 선택일까? 1줄로 적어보자.",
+    noteHint: "힌트: 강화도로 옮긴 뒤, 백성들은 산성이나 섬으로 들어가 지냈고 최씨 정권은 강화도에 있었어. 두 집단이 각각 어떤 처지에 놓였는지 비교해보면 실마리가 보일 거야."
   },
   {
     id: "t4", kind: "predict", year: "1232", badge: "처인성 전투",
@@ -382,7 +393,8 @@ const TURNS = [
     ],
     result: `<b>실제 역사</b> — 차별받던 특수 행정 구역의 주민과 노비도 단결해서 몽골에 저항했어.`,
     noteRequired: true,
-    notePrompt: "신분 때문에 차별받던 사람들이 왜 이 싸움에 함께했을지, 자기 생각을 적어보자."
+    notePrompt: "신분 때문에 차별받던 사람들이 왜 이 싸움에 함께했을지, 자기 생각을 적어보자.",
+    noteHint: "힌트: 몽골군이 쳐들어오면 신분과 상관없이 마을과 가족이 똑같이 위험해져. 나라 안에서 차별받았던 것과, 나라 밖의 적 앞에서는 어떤 게 달라질지 생각해보자."
   }
 ];
 
@@ -402,7 +414,7 @@ let turnIndex = 0;
 let answers = {};   // turnId -> optionId
 let notes = {};     // turnId -> text
 let reorderState = REORDER_CARDS.map(c => c.id);
-let pickedForSwap = null;
+let sortableInstance = null;
 let PREVIEW = false;
 
 /* ── URL 파라미터 자동 채움 / 모드 분기 ──
@@ -423,12 +435,6 @@ function init(){
     if (!sid) document.getElementById("studentId").value = "preview";
     if (!name) document.getElementById("studentName").value = "교사미리보기";
     checkStart();
-  }
-
-  if (params.get("token")) {
-    showScreen("screen-teacher");
-    loadTeacherView(params.get("token"));
-    document.getElementById("teacherRefreshBtn").addEventListener("click", () => loadTeacherView(params.get("token")));
   }
 }
 
@@ -525,9 +531,14 @@ function renderTurn(){
 function renderTurnResult(t){
   const host = document.getElementById("turnResultHost");
   const factHtml = t.factCard ? `<div class="fact-card"><b>${t.factCard.title}</b><br>${t.factCard.body}</div>` : "";
+  const hintHtml = t.noteHint ? `
+    <button class="hint-toggle" id="turnHintToggle">💡 막막하면 힌트 보기</button>
+    <div class="hint-box" id="turnHintBox">${t.noteHint}</div>
+  ` : "";
   const noteHtml = t.noteRequired ? `
     <label>${t.notePrompt}</label>
     <textarea id="turnNote" placeholder="한 줄이어도 좋으니 내 생각을 적어보자"></textarea>
+    ${hintHtml}
   ` : "";
 
   host.innerHTML = `
@@ -548,6 +559,11 @@ function renderTurnResult(t){
       nextBtn.disabled = noteEl.value.trim().length < 2;
     });
   }
+  if (t.noteHint) {
+    document.getElementById("turnHintToggle").addEventListener("click", () => {
+      document.getElementById("turnHintBox").classList.toggle("open");
+    });
+  }
 
   document.getElementById("turnNextBtn").addEventListener("click", () => {
     if (t.noteRequired) notes[t.id] = document.getElementById("turnNote").value.trim();
@@ -563,7 +579,9 @@ function renderTurnResult(t){
   });
 }
 
-/* ── 순서 재배열 (탭-스왑 방식: 터치 환경에서 네이티브 드래그보다 안정적) ── */
+/* ── 순서 재배열: 드래그(SortableJS) + 화살표 이중 지원 ──
+ * 드래그는 왼쪽 손잡이(⠿)로만 시작되게 해서, 카드 아무 데나 눌러도
+ * 실수로 끌리지 않도록 함. 화살표는 드래그가 어색한 학생을 위한 대안. */
 function shuffle(arr){
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -574,33 +592,49 @@ function shuffle(arr){
 }
 function renderReorder(){
   reorderState = shuffle(REORDER_CARDS.map(c => c.id));
-  pickedForSwap = null;
   drawReorderList();
 }
 function drawReorderList(){
   const host = document.getElementById("reorderList");
-  host.innerHTML = "";
-  reorderState.forEach((cardId, i) => {
+  host.innerHTML = reorderState.map((cardId, i) => {
     const card = REORDER_CARDS.find(c => c.id === cardId);
-    const el = document.createElement("div");
-    el.className = "reorder-card" + (pickedForSwap === cardId ? " picked" : "");
-    el.innerHTML = `<span class="slot-num">${i+1}</span><span class="label">${card.label}</span><span class="yr-tag">${card.yr}</span>`;
-    el.addEventListener("click", () => onReorderCardClick(cardId));
-    host.appendChild(el);
+    return `<div class="reorder-card" data-id="${cardId}">
+      <span class="slot-num">${i+1}</span>
+      <span class="drag-handle" aria-label="끌어서 순서 바꾸기">⠿</span>
+      <span class="label">${card.label}</span>
+      <span class="yr-tag">${card.yr}</span>
+      <div class="arrow-group">
+        <button type="button" class="arrow-btn" data-dir="up" ${i===0 ? "disabled" : ""}>▲</button>
+        <button type="button" class="arrow-btn" data-dir="down" ${i===reorderState.length-1 ? "disabled" : ""}>▼</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  host.querySelectorAll(".arrow-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cardEl = btn.closest(".reorder-card");
+      const id = cardEl.dataset.id;
+      const idx = reorderState.indexOf(id);
+      const targetIdx = btn.dataset.dir === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= reorderState.length) return;
+      [reorderState[idx], reorderState[targetIdx]] = [reorderState[targetIdx], reorderState[idx]];
+      drawReorderList();
+    });
   });
-}
-function onReorderCardClick(cardId){
-  if (!pickedForSwap) {
-    pickedForSwap = cardId;
-  } else if (pickedForSwap === cardId) {
-    pickedForSwap = null;
-  } else {
-    const i1 = reorderState.indexOf(pickedForSwap);
-    const i2 = reorderState.indexOf(cardId);
-    [reorderState[i1], reorderState[i2]] = [reorderState[i2], reorderState[i1]];
-    pickedForSwap = null;
+
+  if (sortableInstance) sortableInstance.destroy();
+  if (typeof Sortable !== "undefined") {
+    sortableInstance = new Sortable(host, {
+      handle: ".drag-handle",
+      animation: 150,
+      ghostClass: "sortable-ghost",
+      chosenClass: "sortable-chosen",
+      onEnd: function(){
+        reorderState = Array.from(host.children).map(el => el.dataset.id);
+        drawReorderList();
+      }
+    });
   }
-  drawReorderList();
 }
 
 document.getElementById("reorderSubmitBtn").addEventListener("click", () => {
@@ -660,29 +694,6 @@ document.getElementById("submitFinalBtn").addEventListener("click", async () => 
   document.getElementById("doneGreeting").textContent = `${studentName}, 수고했어요!`;
   showScreen("screen-done");
 });
-
-/* ── 교사용 대시보드 ── */
-async function loadTeacherView(token){
-  const statusEl = document.getElementById("teacherStatus");
-  const tableEl = document.getElementById("teacherTable");
-  statusEl.textContent = "불러오는 중...";
-  try {
-    const url = `${CONFIG.SHEET_WEBAPP_URL}?token=${encodeURIComponent(token)}&game=${encodeURIComponent(CONFIG.GAME_NAME)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.result === "error") {
-      statusEl.textContent = "인증 실패: " + data.message;
-      tableEl.innerHTML = "";
-      return;
-    }
-    const rows = data.rows || [];
-    statusEl.textContent = `총 ${rows.length}건 제출됨`;
-    tableEl.innerHTML = `<tr><th>학번</th><th>이름</th><th>선택 요약</th><th>서술</th></tr>` +
-      rows.map(r => `<tr><td>${r.studentId||""}</td><td>${r.studentName||""}</td><td>${r.choiceSummary||""}</td><td>${(r.reflection||"").replace(/\n/g,"<br>")}</td></tr>`).join("");
-  } catch (err) {
-    statusEl.textContent = "불러오기 실패: " + err.message;
-  }
-}
 
 /* ── 진입점: 모든 선언·바인딩이 끝난 뒤 마지막에 실행 ── */
 init();
