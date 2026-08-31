@@ -271,8 +271,8 @@
     <div class="card">
       <span class="badge-chip">인출 활동</span>
       <h2>지금까지 있었던 일, 순서대로 놓아보자</h2>
-      <p class="sub reorder-hint">힌트 없이, 방금 겪은 사건들을 시간 순서대로 배열해보세요.
-      왼쪽 손잡이(⠿)를 눌러 끌어서 옮기거나, 오른쪽 화살표로 한 칸씩 옮길 수 있어요.</p>
+      <p class="sub reorder-hint">방금 겪은 사건 중 <b>가장 큰 전환점 4개</b>만 골라뒀어요.
+      시간 순서대로 배열해보세요. 왼쪽 손잡이(⠿)를 눌러 끌어서 옮기거나, 오른쪽 화살표로 한 칸씩 옮길 수 있어요.</p>
       <div class="reorder-list" id="reorderList"></div>
       <button class="btn btn-primary" id="reorderSubmitBtn">순서 제출하기</button>
     </div>
@@ -368,8 +368,13 @@ const TURNS = [
     목적도 있었는지는 역사학자들 사이에서도 해석이 갈려. 정답은 없어.`,
     debate: true,
     noteRequired: true,
-    notePrompt: "이 선택이 왜 논쟁적인 선택일까? 1줄로 적어보자.",
-    noteHint: "힌트: 강화도로 옮긴 뒤, 백성들은 산성이나 섬으로 들어가 지냈고 최씨 정권은 강화도에 있었어. 두 집단이 각각 어떤 처지에 놓였는지 비교해보면 실마리가 보일 거야."
+    notePrompt: "이 선택이 왜 논쟁적인 선택일까? 가장 가까운 이유를 골라보자.",
+    noteOptions: [
+      { id:"a", label:"백성은 산성·섬에서 고생했지만, 최씨 정권은 강화도에서 비교적 안전하게 지냈다는 점 때문에" },
+      { id:"b", label:"강화도가 지리적으로 몽골군을 막기에 실제로 효과적인 곳이었기 때문에" },
+      { id:"c", label:"두 가지 다 어느 정도 맞는 것 같아서, 한쪽으로만 판단하기 어렵기 때문에" }
+    ],
+    noteHint: "힌트: 정답을 고르는 게 아니라, 내가 왜 그 이유가 가장 설득력 있다고 생각하는지가 중요해. 애매하면 c를 골라도 괜찮아."
   },
   {
     id: "t4", kind: "predict", year: "1232", badge: "처인성 전투",
@@ -381,7 +386,8 @@ const TURNS = [
     ],
     result: `<b>실제 역사</b> — 몽골군이 졌어. 승려 김윤후와 처인 부곡의 백성들이 함께 싸워
     몽골군의 총사령관 살리타를 죽였어(1232). 김윤후 한 사람의 활약이 아니라,
-    부곡 백성들과 함께 이뤄낸 승리였어.`
+    부곡 백성들과 함께 이뤄낸 승리였어. 이 공을 인정받아 처인 부곡은 나중에
+    처인현으로 승격됐어 — 차별받던 지역이 신분상 대우를 인정받은 드문 사례야.`
   },
   {
     id: "t5", kind: "predict", year: "무신 정권기", badge: "차별받던 계층의 참전",
@@ -393,20 +399,23 @@ const TURNS = [
     ],
     result: `<b>실제 역사</b> — 차별받던 특수 행정 구역의 주민과 노비도 단결해서 몽골에 저항했어.`,
     noteRequired: true,
-    notePrompt: "신분 때문에 차별받던 사람들이 왜 이 싸움에 함께했을지, 자기 생각을 적어보자.",
-    noteHint: "힌트: 몽골군이 쳐들어오면 신분과 상관없이 마을과 가족이 똑같이 위험해져. 나라 안에서 차별받았던 것과, 나라 밖의 적 앞에서는 어떤 게 달라질지 생각해보자."
+    notePrompt: "신분 때문에 차별받던 사람들이 왜 이 싸움에 함께했을지, 가장 가까운 이유를 골라보자.",
+    noteOptions: [
+      { id:"a", label:"나라가 위험해지면 신분과 상관없이 다 같이 피해를 입기 때문에" },
+      { id:"b", label:"싸운 공을 인정받으면 신분·대우가 달라질 수 있었기 때문에 (처인부곡처럼)" },
+      { id:"c", label:"정확한 이유는 알 수 없지만, 함께 싸운 건 분명한 사실이기 때문에" }
+    ],
+    noteHint: "힌트: 방금 턴에서 처인 부곡이 승격된 사례를 봤지? 그게 힌트가 될 수도 있고, 아닐 수도 있어."
   }
 ];
 
 const REORDER_CARDS = [
-  { id:"r1", label:"사신 피살", yr:"1225" },
-  { id:"r2", label:"1차 침입", yr:"1231" },
-  { id:"r3", label:"강화·다루가치 설치", yr:"1231" },
-  { id:"r4", label:"강화도 천도", yr:"1232" },
-  { id:"r5", label:"처인성 전투", yr:"1232" },
-  { id:"r6", label:"차별받던 계층 참전", yr:"무신정권기" }
+  { id:"r1", label:"몽골의 침입과 강화", yr:"1231" },
+  { id:"r2", label:"강화도 천도", yr:"1232" },
+  { id:"r3", label:"처인성 전투", yr:"1232" },
+  { id:"r4", label:"차별받던 계층 참전", yr:"무신정권기" }
 ];
-const CORRECT_ORDER = ["r1","r2","r3","r4","r5","r6"];
+const CORRECT_ORDER = ["r1","r2","r3","r4"];
 
 /* ── 상태 ── */
 let studentId = "", studentName = "";
@@ -535,11 +544,28 @@ function renderTurnResult(t){
     <button class="hint-toggle" id="turnHintToggle">💡 막막하면 힌트 보기</button>
     <div class="hint-box" id="turnHintBox">${t.noteHint}</div>
   ` : "";
-  const noteHtml = t.noteRequired ? `
-    <label>${t.notePrompt}</label>
-    <textarea id="turnNote" placeholder="한 줄이어도 좋으니 내 생각을 적어보자"></textarea>
-    ${hintHtml}
-  ` : "";
+
+  let noteHtml = "";
+  if (t.noteOptions) {
+    // B안: 자유서술 대신 객관식 고르기 + 선택적 덧붙이기(짧게 써도, 안 써도 됨)
+    const optsHtml = t.noteOptions.map(o => `
+      <button class="opt-btn note-opt-btn" data-opt="${o.id}">
+        <span class="opt-mark"></span><span>${o.label}</span>
+      </button>`).join("");
+    noteHtml = `
+      <label>${t.notePrompt}</label>
+      <div class="opt-list">${optsHtml}</div>
+      ${hintHtml}
+      <label style="margin-top:16px;">더 쓰고 싶은 말이 있다면 (선택, 안 써도 됨)</label>
+      <textarea id="turnNoteExtra" placeholder="짧게 덧붙이고 싶은 게 있으면 적어보자"></textarea>
+    `;
+  } else if (t.noteRequired) {
+    noteHtml = `
+      <label>${t.notePrompt}</label>
+      <textarea id="turnNote" placeholder="한 줄이어도 좋으니 내 생각을 적어보자"></textarea>
+      ${hintHtml}
+    `;
+  }
 
   host.innerHTML = `
     <div class="card">
@@ -552,7 +578,18 @@ function renderTurnResult(t){
     </div>
   `;
 
-  if (t.noteRequired) {
+  let selectedNoteOpt = null;
+  if (t.noteOptions) {
+    const nextBtn = document.getElementById("turnNextBtn");
+    host.querySelectorAll(".note-opt-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        host.querySelectorAll(".note-opt-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedNoteOpt = btn.dataset.opt;
+        nextBtn.disabled = false;
+      });
+    });
+  } else if (t.noteRequired) {
     const noteEl = document.getElementById("turnNote");
     const nextBtn = document.getElementById("turnNextBtn");
     noteEl.addEventListener("input", () => {
@@ -566,7 +603,13 @@ function renderTurnResult(t){
   }
 
   document.getElementById("turnNextBtn").addEventListener("click", () => {
-    if (t.noteRequired) notes[t.id] = document.getElementById("turnNote").value.trim();
+    if (t.noteOptions) {
+      const optLabel = t.noteOptions.find(o => o.id === selectedNoteOpt)?.label || "";
+      const extra = document.getElementById("turnNoteExtra").value.trim();
+      notes[t.id] = optLabel + (extra ? ` / 덧붙임: ${extra}` : "");
+    } else if (t.noteRequired) {
+      notes[t.id] = document.getElementById("turnNote").value.trim();
+    }
     turnIndex++;
     if (turnIndex < TURNS.length) {
       renderTurn();
