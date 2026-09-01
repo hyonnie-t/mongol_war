@@ -290,6 +290,7 @@
         <div class="sub" style="margin-top:4px;">오늘 게임에서 다룬 사건들을 자세히 정리해볼 거예요.</div>
       </div>
       <button class="btn btn-outline" id="submitFinalBtn">활동 제출 완료</button>
+      <p class="sub" id="submitError" style="color:#c0392b; text-align:center; min-height:18px;"></p>
     </div>
   </div>
 
@@ -722,13 +723,25 @@ document.getElementById("submitFinalBtn").addEventListener("click", async () => 
     choicesJson: JSON.stringify({ answers, notes, reorderFinal: reorderState, reorderMatch: matchCount })
   };
 
+  const submitErrorEl = document.getElementById("submitError");
+  if (submitErrorEl) submitErrorEl.textContent = "";
+
   if (!PREVIEW) {
     try {
       if (CONFIG.SHEET_WEBAPP_URL && CONFIG.SHEET_WEBAPP_URL.indexOf("http") === 0) {
-        await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+        const res = await fetch(CONFIG.SHEET_WEBAPP_URL, { method:"POST", body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error(`서버 응답 오류 (status ${res.status})`);
+        const json = await res.json();
+        if (!json || json.result !== "success") {
+          throw new Error((json && json.message) || "백엔드가 저장 실패를 반환함");
+        }
       }
     } catch (err) {
       console.log("전송 실패(콘솔 확인용):", err);
+      btn.disabled = false;
+      btn.textContent = "다시 제출하기";
+      if (submitErrorEl) submitErrorEl.textContent = "기록 저장에 실패했어. 인터넷 연결을 확인하고 다시 눌러줘!";
+      return; // 저장이 확인 안 됐으니 결과 화면을 보여주지 않는다.
     }
   } else {
     console.log("[미리보기] 실제 전송 안 함:", payload);
